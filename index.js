@@ -129,8 +129,7 @@ client.on("interactionCreate", async (interaction) => {
 				tenantToken,
 				process.env.FEEDBACK_BASE,
 				process.env.BUG_POOL,
-				bugs,
-				true
+				bugs
 			);
 
 			fs.unlinkSync(file);
