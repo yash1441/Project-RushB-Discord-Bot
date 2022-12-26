@@ -228,7 +228,7 @@ client.on("interactionCreate", async (interaction) => {
 		if (interaction.customId == "suggestionSelectMenu") {
 			let category = interaction.values[0];
 			const suggestionModal = new ModalBuilder().setCustomId("sug_" + category);
-			suggestionModal.setTitle(selection);
+			suggestionModal.setTitle(category);
 			const suggestionDetails = new TextInputBuilder()
 				.setCustomId("suggestionDetails")
 				.setLabel("Suggestion Details")
