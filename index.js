@@ -251,6 +251,72 @@ client.on("interactionCreate", async (interaction) => {
 	}
 });
 
+client.on("messageReactionAdd", async (reaction, user) => {
+	if (reaction.partial) {
+		try {
+			await reaction.fetch();
+		} catch (error) {
+			console.error("Something went wrong when fetching the message:", error);
+			return;
+		}
+	}
+
+	let message = reaction.message;
+	let channel = reaction.message.channelId;
+
+	if (channel != "968998152009027615" || user == client.user) return;
+	let discord_id = message.embeds[0].description;
+	let category = message.embeds[0].title;
+	let username = message.embeds[0].author.name.slice(14);
+	let details = message.embeds[0].fields[0].value;
+	let region = message.embeds[0].fields[1].value;
+
+	if (reaction.emoji.name === "✅") {
+		let sugs = {
+			fields: {
+				"Players Contact": discord_id,
+				"Feedback details": details,
+				"Feedback Type": category,
+				"Players Region": region,
+				Source: "Discord Suggestion",
+			},
+		};
+
+		let tenantToken = await feishu.authorize(
+			process.env.FEISHU_ID,
+			process.env.FEISHU_SECRET
+		);
+
+		await feishu.createRecord(
+			tenantToken,
+			process.env.FEEDBACK_BASE,
+			process.env.FEEDBACK_POOL,
+			sugs
+		);
+
+		await message
+			.edit({ content: `✅✅ **ACCEPTED BY ${user}** ✅✅` })
+			.then(message.reactions.removeAll());
+
+		const suggestionEmbed = new EmbedBuilder()
+			.setTitle(category)
+			.setAuthor({ name: `Suggestion by ${username}` })
+			.addFields({ name: "Feedback details", value: details })
+			.setTimestamp();
+
+		await client.channels
+			.fetch("961887917255561226")
+			.then((channel) => channel.send({ embeds: [suggestionEmbed] }))
+			.then((sentMessage) => {
+				sentMessage.react("🔼").then(() => sentMessage.react("🔽"));
+			});
+	} else if (reaction.emoji.name === "❌") {
+		await message
+			.edit({ content: `❌❌ **REJECTED BY ${user}** ❌❌` })
+			.then(message.reactions.removeAll());
+	} else return;
+});
+
 client.login(process.env.DISCORD_TOKEN);
 
 function interactionRegionRole(interaction) {
