@@ -105,7 +105,7 @@ client.on("interactionCreate", async (interaction) => {
 		);
 		let response = await feishu.uploadToDrive(
 			tenantToken,
-			process.env.EA1_BASE,
+			process.env.FEEDBACK_BASE,
 			file,
 			"bitable_image"
 		);
