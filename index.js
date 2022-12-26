@@ -76,4 +76,21 @@ client.on("ready", () => {
 	});
 });
 
+client.on("interactionCreate", async (interaction) => {
+	if (interaction.isChatInputCommand()) {
+		const command = interaction.client.commands.get(interaction.commandName);
+
+		if (!command) return;
+
+		try {
+			await command.execute(interaction, client);
+		} catch (error) {
+			console.error(error);
+			await interaction.editReply({
+				content: "There was an error while executing this command!",
+			});
+		}
+	}
+});
+
 client.login(process.env.DISCORD_TOKEN);
