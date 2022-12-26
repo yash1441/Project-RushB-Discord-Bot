@@ -91,6 +91,62 @@ client.on("interactionCreate", async (interaction) => {
 			});
 		}
 	} else if (interaction.isButton()) {
+		if (interaction.customId == "suggestionSubmit") {
+			await interaction.deferReply({ ephemeral: true });
+			const suggestionSelectMenu = new StringSelectMenuBuilder()
+				.setCustomId("suggestionSelectMenu")
+				.setPlaceholder("Suggestion Category")
+				.addOptions(
+					{
+						label: "Vehicle",
+						value: "Vehicle",
+					},
+					{
+						label: "Building",
+						value: "Building",
+					},
+					{
+						label: "Weather",
+						value: "Weather",
+					},
+					{
+						label: "Chat",
+						value: "Chat",
+					},
+					{
+						label: "Shooting",
+						value: "Shooting",
+					},
+					{
+						label: "Clan",
+						value: "Clan",
+					},
+					{
+						label: "Game Modes",
+						value: "Game Modes",
+					},
+					{
+						label: "Progression",
+						value: "Progression",
+					},
+					{
+						label: "Customization",
+						value: "Customization",
+					},
+					{
+						label: "Others",
+						value: "Others",
+					}
+				);
+
+			let row = new ActionRowBuilder().addComponents(suggestionSelectMenu);
+
+			await interaction.editReply({
+				content: `**Select Suggestion Category**`,
+				components: [row],
+			});
+		}
+	} else if (interaction.isModalSubmit()) {
 		if (interaction.customId.startsWith("bug_")) {
 			await interaction.deferReply({ ephemeral: true });
 			let bPhone = interaction.fields.getTextInputValue("bugPhone");
@@ -136,6 +192,60 @@ client.on("interactionCreate", async (interaction) => {
 
 			await interaction.editReply({
 				content: "Your submission was received successfully!",
+			});
+		} else if (interaction.customId.startsWith("sug_")) {
+			await interaction.deferReply({ ephemeral: true });
+
+			let suggestionCategory = interaction.customId.substring(4);
+			let suggestionDetails =
+				interaction.fields.getTextInputValue("suggestionDetails");
+
+			await interaction.editReply({
+				content: "Your submission was received successfully!",
+			});
+
+			const suggestionEmbed = new EmbedBuilder()
+				.setTitle(suggestionCategory)
+				.setDescription(interaction.user.id)
+				.setAuthor({ name: `Suggestion by ${interaction.user.tag}` })
+				.addFields(
+					{ name: "Feedback details", value: suggestionDetails },
+					{
+						name: "Players Region",
+						value: interactionRegionRole(interaction),
+					}
+				)
+				.setTimestamp();
+
+			await client.channels
+				.fetch("968998152009027615")
+				.then((channel) => channel.send({ embeds: [suggestionEmbed] }))
+				.then((sentMessage) => {
+					sentMessage.react("✅").then(() => sentMessage.react("❌"));
+				});
+		}
+	} else if (interaction.isStringSelectMenu()) {
+		if (interaction.customId == "suggestionSelectMenu") {
+			let category = interaction.values[0];
+			const suggestionModal = new ModalBuilder().setCustomId("sug_" + category);
+			suggestionModal.setTitle(selection);
+			const suggestionDetails = new TextInputBuilder()
+				.setCustomId("suggestionDetails")
+				.setLabel("Suggestion Details")
+				.setPlaceholder("Explain the suggestion here.")
+				.setStyle(TextInputStyle.Paragraph);
+
+			let firstQuestion = new ActionRowBuilder().addComponents(
+				suggestionDetails
+			);
+
+			suggestionModal.addComponents(firstQuestion);
+
+			await interaction.showModal(suggestionModal);
+			await interaction.followUp({
+				content: `Selected **${category}**.`,
+				components: [],
+				ephemeral: true,
 			});
 		}
 	}
