@@ -252,3 +252,40 @@ client.on("interactionCreate", async (interaction) => {
 });
 
 client.login(process.env.DISCORD_TOKEN);
+
+function interactionRegionRole(interaction) {
+	let regions = [];
+
+	if (interaction.member.roles.cache.has("979570667517276210"))
+		regions.push("Philippines");
+	if (interaction.member.roles.cache.has("979570954378293258"))
+		regions.push("Brazil");
+	if (interaction.member.roles.cache.has("991265341361618996"))
+		regions.push("Canada");
+	if (interaction.member.roles.cache.has("979571365898244127"))
+		regions.push("USA");
+	if (interaction.member.roles.cache.has("1011800999440162856"))
+		regions.push("Japan");
+	if (interaction.member.roles.cache.has("1011801313966829678"))
+		regions.push("Turkey");
+	if (interaction.member.roles.cache.has("1011801583299858443"))
+		regions.push("Russia");
+	if (interaction.member.roles.cache.has("1011801707015061604"))
+		regions.push("Thailand");
+	if (interaction.member.roles.cache.has("1011801924657487932"))
+		regions.push("Indonesia");
+	if (interaction.member.roles.cache.has("991641489400672258"))
+		regions.push("CIS");
+	if (interaction.member.roles.cache.has("1011802070883520634"))
+		regions.push("South Korea");
+	if (interaction.member.roles.cache.has("1011802435200757871"))
+		regions.push("Iran");
+	if (interaction.member.roles.cache.has("1011802705628508260"))
+		regions.push("United Arab Emirates");
+	if (interaction.member.roles.cache.has("979571058099241081"))
+		regions.push("Europe");
+	if (interaction.member.roles.cache.has("1011867395876462602"))
+		regions.push("Global");
+
+	return regions.join("\n");
+}
